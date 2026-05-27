@@ -1274,27 +1274,6 @@ document.querySelectorAll('.modal-overlay').forEach(m => {
   const auth = getAuth(app);
 
 const provider = new GoogleAuthProvider();
-  window.loginGoogle = async function() {
-
-  try {
-
-    const result = await signInWithPopup(auth, provider);
-
-    const user = result.user;
-
-    alert("Login realizado com sucesso!");
-
-    console.log(user);
-
-  } catch(error) {
-
-    console.log(error);
-
-    alert("Erro no login");
-
-  }
-
-}
   const analytics = getAnalytics(app);
 </script>
 </body>
