@@ -651,7 +651,7 @@ body {
         </div>
         <div style="display:flex;gap:10px;">
           <button class="btn-outline" onclick="goStep(2)" style="flex:1;">← Voltar</button>
-          <button class="btn-primary" onclick="publicarAnuncio()" style="flex:2;" id="btn-publicar">
+          <button class="btn-primary" onclick="publicarPetFirebase()" style="flex:2;" id="btn-publicar">
             <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
             Publicar
           </button>
@@ -1289,6 +1289,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
   
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js";
+
   // TODO: Add SDKs for Firebase products that you want to use
   // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -1312,6 +1313,43 @@ const provider = new GoogleAuthProvider();
   const analytics = getAnalytics(app);
   const storage = getStorage(app);
   const db = getFirestore(app);
+  async function publicarPetFirebase() {
+
+  const pet = {
+
+    nome: document.getElementById('cad-nome').value,
+    especie: document.getElementById('cad-especie').value,
+    raca: document.getElementById('cad-raca').value,
+    sexo: document.getElementById('cad-sexo').value,
+    cor: document.getElementById('cad-cor').value,
+    porte: document.getElementById('cad-porte').value,
+    desc: document.getElementById('cad-desc').value,
+    data: document.getElementById('cad-data').value,
+    local: document.getElementById('cad-local').value,
+    cidade: document.getElementById('cad-cidade').value,
+    contato: document.getElementById('cad-contato-nome').value,
+    whatsapp: document.getElementById('cad-whatsapp').value,
+    criadoEm: new Date()
+
+  };
+
+  try {
+
+    await addDoc(collection(db, "pets"), pet);
+
+    showToast("🐾 Pet publicado!");
+
+    console.log("Pet salvo no Firebase");
+
+  } catch (error) {
+
+    console.error(error);
+
+    showToast("Erro ao salvar");
+
+  }
+
+}
   // LOGIN GOOGLE
 window.loginGoogle = async function() {
 
