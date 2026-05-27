@@ -485,47 +485,88 @@ input:checked + .slider:before{
 
 /* DARK MODE */
 
-.dark-mode{
-  --white:#121212;
-  --dark:#ffffff;
-  --gray:#cfcfcf;
-  --gray-light:#1d1d1d;
-  --green-pale:#1f2a22;
-  background:#121212;
+/* Estilo visual do Switch */
+.switch input:checked + .slider { background-color: var(--green); }
+.switch input:checked + .slider:before { transform: translateX(20px); }
+.slider:before {
+  position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+  background-color: white; transition: .3s; border-radius: 50%;
+}
+ /*FOTO DE PERFIL SE DER ERRO*/
+  /* Garante a foto de perfil perfeitamente redonda e sem distorção */
+#profile-pic {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover; /* Não deixa a imagem esticar ou amassar */
+  border: 3px solid var(--green);
+  cursor: pointer;
+  transition: transform 0.2s;
 }
 
-.dark-mode body{
-  background:#121212;
+#profile-pic:hover {
+  transform: scale(1.03); /* Efeito sutil ao passar o mouse */
 }
 
-.dark-mode .phone{
-  background:#121212;
+/* Modal/Menu de opções da foto */
+.profile-menu-modal {
+  display: none; /* Escondido por padrão */
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
 
-.dark-mode .screen{
-  background:#121212;
+.profile-menu-card {
+  background: var(--white);
+  width: 85%;
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: scaleUp 0.2s ease-out;
 }
 
-.dark-mode .config-card,
-.dark-mode .menu-item,
-.dark-mode .p-stat{
-  background:#1e1e1e;
-  color:white;
+@keyframes scaleUp {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
-.dark-mode .config-input{
-  background:#2a2a2a;
-  color:white;
-  border:1px solid #444;
+.profile-menu-btn {
+  width: 100%;
+  background: var(--gray-light);
+  color: var(--dark);
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
-.dark-mode .perfil-header{
-  background:#1a1a1a;
+.profile-menu-btn.danger {
+  background: #ffebe6;
+  color: var(--accent);
 }
 
-.dark-mode .bottom-nav{
-  background:#1a1a1a;
-  border-top:1px solid #333;
+/* Modal para Visualizar a Foto Gigante */
+.photo-preview-modal {
+  display: none;
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 300;
+  justify-content: center;
+  align-items: center;
 }
 </style>
 </head>
@@ -873,63 +914,95 @@ input:checked + .slider:before{
     </div>
 
     <!-- PERFIL -->
-    <div class="screen" id="screen-perfil">
-      <div class="perfil-header">
-        <div>
-          <div class="perfil-name" id="perfil-nome">Usuário</div>
-          <div class="perfil-email" id="perfil-email">email@exemplo.com</div>
-        </div>
-        <button class="edit-btn" onclick="openEditModal()">Editar</button>
-      </div>
-      <div style="padding:12px 18px 0;">
-        <div class="perfil-stats">
-          <div class="p-stat"><div class="p-stat-num" id="p-stat-anuncios">0</div><div class="p-stat-label">Anúncios</div></div>
-          <div class="p-stat"><div class="p-stat-num" id="p-stat-enc">0</div><div class="p-stat-label">Encontrados</div></div>
-      </div>
-      <div style="padding:14px 18px 8px;">
-        <div style="font-family:'Syne',sans-serif;font-size:15px;color:var(--dark);margin-bottom:10px;">Meus anúncios</div>
-        <div id="perfil-pet-list"></div>
-      </div>
-      <div class="perfil-menu">
-        <div class="menu-item" onclick="goToScreen('config')"
-          <div class="menu-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg></div>
-          <div class="menu-label">Configurações</div><div class="menu-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
-        </div>
-        <div class="menu-item" onclick="showToast('❓ Central de ajuda em breve')">
-          <div class="menu-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></div>
-          <div class="menu-label">Ajuda e suporte</div><div class="menu-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
-        </div>
-        <div class="menu-item" onclick="fazerLogout()">
-          <div class="menu-icon danger"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg></div>
-          <div class="menu-label danger">Sair da conta</div><div class="menu-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
-        </div>
-      </div>
+<div class="screen" id="screen-perfil">
+  <div class="perfil-header" style="display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+    
+    <div style="position: relative; flex-shrink: 0;">
+      <img id="profile-pic" src="https://via.placeholder.com/150" alt="Foto de Perfil" onclick="abrirMenuFoto()">
+      <input type="file" id="profile-file-input" accept="image/*" style="display: none;" onchange="window.trocarFotoPerfil(event)">
     </div>
 
-      <!-- CONFIGURAÇÕES -->
-<div class="screen" id="screen-config">
-
-  <div class="perfil-header">
-
-    <button
-      class="edit-btn"
-      onclick="goToScreen('perfil')"
-    >
-      ← Voltar
-    </button>
-
-    <div style="
-      font-family:'Syne',sans-serif;
-      font-size:20px;
-      color:var(--dark);
-    ">
-      Configurações
+    <div style="flex: 1;">
+      <div class="perfil-name" id="perfil-nome">Usuário</div>
+      <div class="perfil-email" id="perfil-email">email@exemplo.com</div>
     </div>
-
+    
+    <button class="edit-btn" onclick="openEditModal()">Editar</button>
+  </div>
+  
+  <div style="padding:12px 18px 0;">
+    <div class="perfil-stats">
+      <div class="p-stat"><div class="p-stat-num" id="p-stat-anuncios">0</div><div class="p-stat-label">Anúncios</div></div>
+      <div class="p-stat"><div class="p-stat-num" id="p-stat-enc">0</div><div class="p-stat-label">Encontrados</div></div>
+    </div>
   </div>
 
-  <div class="config-container">
+  <div style="padding:14px 18px 8px;">
+    <div style="font-family:'Syne',sans-serif;font-size:15px;color:var(--dark);margin-bottom:10px;">Meus anúncios</div>
+    <div id="perfil-pet-list"></div>
+  </div>
+  
+  <div class="perfil-menu">
+    <div class="menu-item" onclick="goToScreen('settings')">
+      <div class="menu-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg></div>
+      <div class="menu-label">Configurações</div>
+      <div class="menu-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+    </div>
+    
+    <div class="menu-item" onclick="showToast('❓ Central de ajuda em breve')">
+      <div class="menu-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></div>
+      <div class="menu-label">Ajuda e suporte</div>
+      <div class="menu-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+    </div>
+    
+    <div class="menu-item" onclick="fazerLogout()">
+      <div class="menu-icon danger"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg></div>
+      <div class="menu-label danger">Sair da conta</div>
+      <div class="menu-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+    </div>
+  </div>
+</div>
+      <!-- CONFIGURAÇÕES -->
+<div class="screen" id="screen-settings">
+  <div class="screen-header" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid #eee;">
+    <button onclick="voltarTela()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--dark);">
+      <i class="bi bi-arrow-left"></i> Voltar
+    </button>
+    <h2 style="font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--dark); margin: 0; flex: 1; text-align: center;">Configurações</h2>
+    <i class="bi bi-gear-fill" style="font-size: 20px; color: var(--green);"></i>
+  </div>
 
+  <div style="padding: 20px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; height: calc(100% - 70px);">
+    
+    <div>
+      <label style="display: block; font-size: 14px; font-weight: 700; color: var(--dark); margin-bottom: 6px;">Nome de Exibição</label>
+      <input type="text" id="settings-name-input" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd; font-family: inherit;">
+    </div>
+
+    <div>
+      <label style="display: block; font-size: 14px; font-weight: 700; color: var(--dark); margin-bottom: 6px;">Telefone / Contato</label>
+      <input type="text" id="settings-phone-input" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd; font-family: inherit;">
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
+
+    <div style="display: flex; align-items: center; justify-content: space-between; background: var(--gray-light); padding: 14px; border-radius: 14px;" class="setting-row">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <i class="bi bi-moon-fill" style="color: var(--dark); font-size: 18px;"></i>
+        <span style="font-weight: 700; font-size: 15px; color: var(--dark);">Modo Noturno</span>
+      </div>
+      <label class="switch" style="position: relative; display: inline-block; width: 44px; height: 24px;">
+        <input type="checkbox" id="dark-mode-toggle" style="opacity: 0; width: 0; height: 0;">
+        <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .3s; border-radius: 24px;"></span>
+      </label>
+    </div>
+
+    <button onclick="salvarConfiguracoes()" style="width: 100%; background: var(--green); color: white; border: none; padding: 14px; border-radius: 14px; font-weight: 800; font-size: 16px; cursor: pointer; margin-top: 10px; transition: 0.2s;">
+      Salvar Configurações
+    </button>
+
+  </div>
+</div>
     <!-- EMAIL PUBLICO -->
     <div class="config-card">
 
@@ -1144,25 +1217,106 @@ let notifs = [...NOTIFS_BASE];
 
 /* ═══════════════════════ NAVIGATION ═══════════════════════ */
 const AUTH_SCREENS = ['login','cadastro-conta','esqueci'];
-const APP_SCREENS  = ['home','mapa','cadastrar','notificacoes','perfil','detalhe'];
+const APP_SCREENS  = ['home','mapa','cadastrar','notificacoes','perfil','detalhe', 'settings']; // Adicionei 'settings' aqui
 const NAV_MAP = { home:'nav-home', mapa:'nav-mapa', notificacoes:'nav-notificacoes', perfil:'nav-perfil' };
 
+// VARIÁVEL GLOBAL PARA GUARDAR O HISTÓRICO (PRO BOTÃO VOLTAR)
+let telaAnterior = 'home';
+
 function goToScreen(id) {
+  // Salva qual era a tela ativa antes de mudar (se não for a de configurações)
+  const telaAtual = document.querySelector('.screen.active');
+  if (telaAtual && telaAtual.id !== 'screen-settings') {
+    telaAnterior = telaAtual.id.replace('screen-', '');
+  }
+
   [...AUTH_SCREENS, ...APP_SCREENS].forEach(s => {
     const el = document.getElementById('screen-' + s);
     if (el) el.classList.remove('active');
   });
+  
   const el = document.getElementById('screen-' + id);
   if (el) el.classList.add('active');
+  
   const isApp = APP_SCREENS.includes(id);
-  document.getElementById('bottomNav').style.display = isApp ? 'flex' : 'none';
+  // Esconde a barra inferior se for tela de login/cadastro ou na tela cheia de configurações
+  if (id === 'settings') {
+    document.getElementById('bottomNav').style.display = 'none';
+  } else {
+    document.getElementById('bottomNav').style.display = isApp ? 'flex' : 'none';
+  }
+  
   Object.values(NAV_MAP).forEach(n => document.getElementById(n)?.classList.remove('active'));
   if (NAV_MAP[id]) document.getElementById(NAV_MAP[id]).classList.add('active');
+  
+  // Se o destino for as configurações, puxa os dados salvos do usuário para os inputs
+  if (id === 'settings' && window.currentUser) {
+    const inputNome = document.getElementById('settings-name-input');
+    const inputTel = document.getElementById('settings-phone-input');
+    if (inputNome) inputNome.value = window.currentUser.nome || '';
+    if (inputTel) inputTel.value = window.currentUser.telefone || '';
+  }
+
   if (id === 'mapa') renderMap();
   if (id === 'home') renderHomeList();
   if (id === 'notificacoes') renderNotifs('todas');
   if (id === 'perfil') renderPerfil();
 }
+
+// NOVA: Função do botão Voltar da tela de Configurações
+window.voltarTela = function() {
+  goToScreen(telaAnterior || 'home');
+}
+
+// NOVA: Função do botão Salvar Configurações
+window.salvarConfiguracoes = function() {
+  const novoNome = document.getElementById('settings-name-input').value.trim();
+  const novoTelefone = document.getElementById('settings-phone-input').value.trim();
+
+  if (!novoNome) {
+    showToast('O nome não pode ficar vazio!');
+    return;
+  }
+
+  // Atualiza o objeto do usuário logado na memória
+  if (window.currentUser) {
+    window.currentUser.nome = novoNome;
+    window.currentUser.telefone = novoTelefone;
+    
+    // Atualiza dinamicamente o nome no perfil para você ver o resultado na hora
+    const profileNameElement = document.getElementById('profile-name');
+    if (profileNameElement) profileNameElement.innerText = novoNome;
+  }
+
+  showToast('Configurações salvas!');
+  voltarTela(); // Volta automaticamente para onde você estava
+}
+
+// NOVO: Escutador do Modo Noturno funcional
+document.addEventListener('DOMContentLoaded', () => {
+  const darkModeToggle = document.getElementById('dark-mode-toggle');
+  const phoneContainer = document.querySelector('.phone'); 
+
+  if (darkModeToggle && phoneContainer) {
+    darkModeToggle.addEventListener('change', () => {
+      if (darkModeToggle.checked) {
+        // Altera as cores para o padrão Noturno
+        phoneContainer.style.setProperty('--white', '#121212');
+        phoneContainer.style.setProperty('--dark', '#ffffff');
+        phoneContainer.style.setProperty('--gray-light', '#1e1e1e');
+        phoneContainer.style.setProperty('--gray', '#aaaaaa');
+        phoneContainer.style.background = '#121212';
+      } else {
+        // Restaura as variáveis originais para o Modo Claro
+        phoneContainer.style.setProperty('--white', '#ffffff');
+        phoneContainer.style.setProperty('--dark', '#1a1a1a');
+        phoneContainer.style.setProperty('--gray-light', '#f4f4f4');
+        phoneContainer.style.setProperty('--gray', '#6b7280');
+        phoneContainer.style.background = '#ffffff';
+      }
+    });
+  }
+});
 
 /* ═══════════════════════ HOME LIST ═══════════════════════ */
 function renderHomeList() {
