@@ -6,6 +6,50 @@
 <title>PetFinder</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
+  .perfil-avatar-container{
+  position:relative;
+  width:110px;
+  height:110px;
+  margin-bottom:10px;
+}
+
+.perfil-avatar{
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  overflow:hidden;
+  border:4px solid white;
+  box-shadow:0 4px 14px rgba(0,0,0,0.15);
+  background:#f3f3f3;
+}
+
+.perfil-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.edit-photo-btn{
+  position:absolute;
+  bottom:0;
+  right:0;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  background:#ff7a00;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  font-size:15px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.2);
+  transition:0.2s;
+}
+
+.edit-photo-btn:hover{
+  transform:scale(1.08);
+}
 :root {
   --green: #2d7a3a;
   --green-light: #4caf63;
@@ -656,21 +700,45 @@ body {
     <div class="screen" id="screen-perfil">
       <div class="perfil-header">
         <div>
-          <div class="perfil-avatar">
+<div class="perfil-avatar-container">
 
-  <img
-    id="profile-pic"
-    src="https://via.placeholder.com/100"
-    alt="Foto de perfil"
+  <div class="perfil-avatar">
+
+    <img
+      id="profile-pic"
+      src="https://via.placeholder.com/100"
+      alt="Foto de perfil"
+    >
+
+  </div>
+
+  <label for="upload-foto" class="edit-photo-btn">
+    ✏️
+  </label>
+
+  <input
+    type="file"
+    id="upload-foto"
+    accept="image/*"
+    onchange="trocarFotoPerfil(event)"
+    hidden
   >
 
 </div>
 
-<input
-  type="file"
-  accept="image/*"
-  onchange="trocarFotoPerfil(event)"
->
+  <label for="upload-foto" class="edit-photo-btn">
+    ✏️
+  </label>
+
+  <input
+    type="file"
+    id="upload-foto"
+    accept="image/*"
+    onchange="trocarFotoPerfil(event)"
+    hidden
+  >
+
+</div>
           <div class="perfil-name" id="perfil-nome">Usuário</div>
           <div class="perfil-email" id="perfil-email">email@exemplo.com</div>
         </div>
