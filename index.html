@@ -839,9 +839,9 @@ body {
 <script>
 /* ═══════════════════════ DATA ═══════════════════════ */
 const PETS_MOCK = [
-  { id:1, nome:'Mel', especie:'🐶 Cachorro', raca:'Golden Retriever', sexo:'Fêmea', cor:'Dourada', porte:'Grande', desc:'Coleira rosa com plaquinha. Muito dócil e brinca com crianças.', data:'2025-05-20', local:'Av. Fernandes Lima, 500', cidade:'Farol – Maceió/AL', whatsapp:'82996233653', recompensa:'R$ 300,00', status:'lost', emoji:'🐕', x:148, y:45, owner:null },
-  { id:2, nome:'Bichano', especie:'🐱 Gato', raca:'Siamês', sexo:'Macho', cor:'Caramelo e branco', porte:'Pequeno', desc:'Olhos azuis, muito assustado com barulho.', data:'2025-05-22', local:'Rua do Comércio, 120', cidade:'Centro – Maceió/AL', whatsapp:'82981774795', recompensa:'—', status:'lost', emoji:'🐈', x:40, y:45, owner:null },
-  { id:3, nome:'Thor', especie:'🐶 Cachorro', raca:'Pastor Alemão', sexo:'Macho', cor:'Preto e marrom', porte:'Grande', desc:'Usa coleira preta. Responde pelo nome.', data:'2025-05-18', local:'Rua Sá e Albuquerque, 80', cidade:'Jaraguá – Maceió/AL', whatsapp:'82993497822', recompensa:'R$ 200,00', status:'lost', emoji:'🐕‍🦺', x:252, y:45, owner:null },
+  { id:1, nome:'Simba', especie:'🐶 Cachorro', raca:'Vira-lata', sexo:'Macho', cor:'Amarelo queimado', porte:'Médio', desc:'Usa coleira preta, é um cachorro idoso e dócil', data:'2026-05-25', local:'Av. Fernandes Lima, 500', cidade:'Farol – Maceió/AL', whatsapp:'11952366855', recompensa:'R$ 100,00', status:'lost', emoji:'🐕', x:148, y:45, owner:Giovanna },
+  { id:2, nome:'Branco', especie:'🐶 Cachorro', raca:'Mestiço', sexo:'Macho', cor:'Branca', porte:'Grande', desc:'Meio hóstil, barulhento e desajeitado', data:'2026-05-22', local:'Flor do Bairro', cidade:'Chã da Jaqueira', whatsapp:'82988023509', recompensa:'—', status:'lost', emoji:'🐕', x:40, y:45, owner:Gilson },
+  { id:3, nome:'Thor', especie:'🐱 Gato', raca:'Sphynx', sexo:'Macho', cor:'Cinza', porte:'Pequeno', desc:'Usa coleira preta. Responde pelo nome.', data:'2026-05-27', local:'Rua Sá e Albuquerque, 80', cidade:'Jaraguá – Maceió/AL', whatsapp:'—', recompensa:'R$ 50,00', status:'lost', emoji:'🐕‍🦺', x:252, y:45, owner:Maria },
 ];
 
 let pets = [...PETS_MOCK];
@@ -852,9 +852,9 @@ let favorites = [];
 let uploadedPhotos = [];
 
 const NOTIFS_BASE = [
-  { type:'alert', icon:'🐶', title:'Cachorro perdido próximo a você!', sub:'Mel (Golden Retriever) foi visto na Av. Fernandes Lima.', time:'há 2 horas', cat:'alertas' },
-  { type:'alert', icon:'🐱', title:'Gato perdido no Centro', sub:'Bichano (Siamês) desapareceu ontem à noite.', time:'há 5 horas', cat:'alertas' },
-  { type:'msg',   icon:'💬', title:'Alguém viu o Thor?', sub:'João entrou em contato sobre seu anúncio.', time:'ontem', cat:'msgs' },
+  { type:'alert', icon:'🐶', title:'Cachorro perdido próximo a você!', sub:'Simba (Vira-lata) foi visto na Av. Fernandes Lima.', time:'há 2 horas', cat:'alertas' },
+  { type:'alert', icon:'🐱', title:'Gato perdido no Centro', sub:'Thor (Sphynx) desapareceu ontem à noite.', time:'há 5 horas', cat:'alertas' },
+  { type:'msg',   icon:'💬', title:'Alguém viu o Thor?', sub:'Maria entrou em contato sobre seu anúncio.', time:'ontem', cat:'msgs' },
   { type:'system',icon:'✅', title:'Anúncio aprovado!', sub:'Seu anúncio foi publicado com sucesso.', time:'2 dias atrás', cat:'todas' },
 ];
 let notifs = [...NOTIFS_BASE];
