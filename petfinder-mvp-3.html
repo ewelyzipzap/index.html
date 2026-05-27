@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Cadê Meu Pet?</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #6abf69;
+  --green-dark: #4a9e5c;
+  --green-light: #8fd08e;
+  --green-pale: #edf7ed;
+  --green-mid: #c8e6c9;
+  --blue: #1e5fa8;
+  --blue-light: #4a90d9;
+  --accent: #ff6b35;
+  --dark: #1a2e3b;
+  --gray: #6b7280;
+  --gray-light: #f4f4f4;
+  --white: #ffffff;
+  --shadow: 0 4px 24px rgba(0,0,0,0.10);
+  --radius: 18px;
+  --nav-h: 68px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: #e4ece4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* ── Phone frame ── */
+.phone {
+  width: 390px;
+  height: 780px;
+  background: var(--white);
+  border-radius: 40px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.10);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Status bar */
+.status-bar {
+  background: var(--white);
+  padding: 10px 24px 6px;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px; font-weight: 700; flex-shrink: 0; z-index: 10;
+}
+.status-icons { display: flex; gap: 6px; align-items: center; }
+.status-icons svg { width: 14px; height: 14px; }
+
+/* Screen container */
+.screen-container { flex: 1; overflow: hidden; position: relative; }
+.screen {
+  position: absolute; inset: 0;
+  overflow-y: auto; overflow-x: hidden;
+  display: none; flex-direction: column;
+  background: var(--white);
+  padding-bottom: var(--nav-h);
+  scrollbar-width: none;
+}
+.screen::-webkit-scrollbar { display: none; }
+.screen.active { display: flex; }
+/* auth screens don't need bottom nav padding */
+.screen.auth-screen { padding-bottom: 0; }
+
+/* ── Animations ── */
+@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+.screen.active > * { animation: fadeUp 0.28s ease both; }
+
+/* ═══════════════════════════════
+   AUTH SCREENS
+═══════════════════════════════ */
+.auth-bg {
+  flex: 1;
+  background: linear-gradient(170deg, #1e5fa8 0%, #2d7fc4 40%, #6abf69 100%);
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+}
+.auth-bg::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 60%);
+}
+/* decorative circles */
+.auth-circle {
+  position: absolute; border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+}
+
+/* splash brand area */
+.auth-brand-area {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px 30px 20px; position: relative; z-index: 1;
+}
+.auth-logo {
+  width: 90px; height: 90px; background: rgba(255,255,255,0.18);
+  border-radius: 26px; display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px; backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.25);
+}
+.auth-logo svg { width: 56px; height: 56px; }
+.auth-app-name {
+  font-family: 'Nunito', sans-serif; font-size: 28px; color: white;
+  font-weight: 900; letter-spacing: -0.3px; margin-bottom: 6px; text-align: center;
+}
+.auth-app-name .cmp-green { color: #a8e6a3; }
+.auth-app-name .cmp-blue { color: #a8d4ff; }
+.auth-tagline { font-size: 13px; color: rgba(255,255,255,0.75); text-align: center; line-height: 1.5; }
+
+.auth-paw-decor { font-size: 60px; opacity: 0.12; position: absolute; }
+
+/* bottom card (login / cadastro) */
+.auth-card {
+  background: var(--white);
+  border-radius: 28px 28px 0 0;
+  padding: 28px 26px 32px;
+  position: relative; z-index: 2;
+  box-shadow: 0 -4px 30px rgba(0,0,0,0.12);
+}
+.auth-card-title {
+  font-family: 'Syne', sans-serif; font-size: 20px; color: var(--dark);
+  margin-bottom: 4px;
+}
+.auth-card-sub { font-size: 13px; color: var(--gray); margin-bottom: 22px; }
+
+/* Google button */
+.btn-google {
+  width: 100%; padding: 13px 18px; border-radius: 14px;
+  border: 2px solid #e5e7eb; background: var(--white);
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  font-size: 14px; font-weight: 800; color: var(--dark); cursor: pointer;
+  transition: all 0.2s; font-family: 'Nunito', sans-serif;
+  margin-bottom: 16px;
+}
+.btn-google:hover { border-color: #4285f4; background: #f8f9ff; }
+.btn-google .g-icon { width: 20px; height: 20px; flex-shrink: 0; }
+
+.divider {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1; height: 1px; background: #e5e7eb;
+}
+.divider span { font-size: 12px; color: var(--gray); font-weight: 700; white-space: nowrap; }
+
+/* form fields */
+.auth-field { margin-bottom: 12px; }
+.auth-label { font-size: 11px; font-weight: 800; color: var(--dark); text-transform: uppercase; letter-spacing: 0.04em; display: block; margin-bottom: 6px; }
+.auth-input {
+  width: 100%; border: 2px solid #e5e7eb; border-radius: 12px;
+  padding: 12px 14px; font-size: 14px; font-family: 'Nunito', sans-serif;
+  color: var(--dark); outline: none; transition: border 0.2s;
+}
+.auth-input:focus { border-color: var(--green); }
+.auth-input-wrap { position: relative; }
+.auth-input-wrap .auth-input { padding-right: 44px; }
+.auth-eye {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; color: var(--gray);
+  display: flex; align-items: center;
+}
+.auth-eye svg { width: 18px; height: 18px; }
+
+.forgot-link {
+  display: block; text-align: right; font-size: 12px; font-weight: 700;
+  color: var(--green); margin-top: -6px; margin-bottom: 14px;
+  cursor: pointer; background: none; border: none; font-family: 'Nunito', sans-serif;
+}
+
+.btn-primary {
+  background: var(--green); color: white; border: none; border-radius: 14px;
+  padding: 14px 20px; font-size: 14px; font-weight: 800; width: 100%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all 0.2s; font-family: 'Nunito', sans-serif;
+}
+.btn-primary:hover { background: #236130; transform: translateY(-1px); }
+.btn-primary:disabled { background: var(--green-mid); cursor: not-allowed; transform: none; }
+
+.auth-switch {
+  text-align: center; margin-top: 18px; font-size: 13px; color: var(--gray);
+}
+.auth-switch button {
+  color: var(--green); font-weight: 800; background: none; border: none;
+  cursor: pointer; font-size: 13px; font-family: 'Nunito', sans-serif;
+}
+
+/* forgot password screen extra */
+.back-link {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 800; color: var(--green);
+  background: none; border: none; cursor: pointer; font-family: 'Nunito', sans-serif;
+  margin-bottom: 20px;
+}
+.back-link svg { width: 16px; height: 16px; }
+
+/* ═══════════════════════════════
+   APP SCREENS (inside app)
+═══════════════════════════════ */
+
+/* Bottom nav */
+.bottom-nav {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: var(--nav-h); background: var(--white);
+  border-top: 1px solid #e5e7eb;
+  display: flex; align-items: center; justify-content: space-around;
+  z-index: 100; padding: 0 4px 8px; flex-shrink: 0;
+}
+.nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  cursor: pointer; padding: 6px 10px; border-radius: 12px;
+  transition: all 0.2s; font-size: 10px; font-weight: 700;
+  color: var(--gray); border: none; background: none;
+}
+.nav-item.active { color: var(--green); }
+.nav-item svg { width: 22px; height: 22px; }
+.nav-fab {
+  width: 52px; height: 52px; background: var(--green); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(45,122,58,0.4); border: none;
+  transition: transform 0.2s; margin-bottom: 8px;
+}
+.nav-fab:hover { transform: scale(1.08); }
+.nav-fab svg { width: 26px; height: 26px; color: white; }
+
+/* ── HOME ── */
+.hero {
+  background: linear-gradient(160deg, #edf7ed 0%, #e8f4ff 100%);
+  padding: 20px 22px 28px; position: relative; overflow: hidden;
+}
+.hero::after {
+  content: ''; position: absolute; right: -30px; bottom: -20px;
+  width: 180px; height: 180px; background: #c8e6c9;
+  border-radius: 50%; opacity: 0.4;
+}
+.brand { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.brand-icon { width: 40px; height: 40px; background: var(--green); border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+.brand-icon svg { width: 22px; height: 22px; color: white; }
+.brand-name { font-family: 'Syne', sans-serif; font-size: 20px; color: var(--dark); }
+.brand-sub { font-size: 11px; color: var(--gray); margin-top: 1px; }
+
+.hero h1 { font-family: 'Syne', sans-serif; font-size: 24px; line-height: 1.2; color: var(--dark); margin-bottom: 8px; position: relative; z-index: 1; }
+.hero h1 span { color: var(--green); }
+.hero p { font-size: 13px; color: var(--gray); line-height: 1.5; position: relative; z-index: 1; margin-bottom: 20px; }
+
+.hero-greeting { font-size: 13px; color: var(--green); font-weight: 800; position: relative; z-index: 1; margin-bottom: 4px; }
+
+.btn-outline {
+  background: transparent; color: var(--green); border: 2px solid var(--green);
+  border-radius: 14px; padding: 12px 20px; font-size: 14px; font-weight: 800;
+  width: 100%; cursor: pointer; margin-top: 10px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all 0.2s; font-family: 'Nunito', sans-serif; position: relative; z-index: 1;
+}
+.btn-outline:hover { background: var(--green-pale); }
+
+/* stats strip */
+.stats-strip {
+  display: flex; justify-content: space-around;
+  padding: 16px; border-bottom: 1px solid #f0f0f0;
+}
+.stat { text-align: center; }
+.stat-num { font-family: 'Syne', sans-serif; font-size: 20px; color: var(--green); }
+.stat-label { font-size: 11px; color: var(--gray); margin-top: 2px; }
+
+/* section */
+.section { padding: 16px 18px; }
+.section-title { font-family: 'Syne', sans-serif; font-size: 16px; color: var(--dark); margin-bottom: 12px; }
+
+/* empty state */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 28px 20px; text-align: center;
+}
+.empty-icon { font-size: 44px; margin-bottom: 12px; opacity: 0.5; }
+.empty-title { font-size: 14px; font-weight: 800; color: var(--dark); margin-bottom: 4px; }
+.empty-sub { font-size: 12px; color: var(--gray); line-height: 1.5; }
+
+/* feature grid */
+.feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.feature-item { background: var(--green-pale); border-radius: 14px; padding: 14px 12px; display: flex; flex-direction: column; gap: 8px; }
+.feature-icon { font-size: 24px; }
+.feature-name { font-size: 12px; font-weight: 800; color: var(--dark); }
+.feature-desc { font-size: 11px; color: var(--gray); line-height: 1.4; }
+
+/* ── CADASTRAR ── */
+.screen-header {
+  padding: 16px 18px 12px; display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.back-btn {
+  width: 36px; height: 36px; border-radius: 10px; background: var(--gray-light);
+  border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.back-btn svg { width: 18px; height: 18px; }
+.screen-title { font-family: 'Syne', sans-serif; font-size: 18px; color: var(--dark); }
+
+
+
+.form-body { padding: 16px 18px; display: flex; flex-direction: column; gap: 14px; }
+.photo-upload {
+  border: 2px dashed var(--green-mid); border-radius: var(--radius);
+  padding: 18px; text-align: center; cursor: pointer;
+  background: var(--green-pale); transition: all 0.2s;
+}
+.photo-upload:hover { border-color: var(--green); }
+.photo-upload svg { width: 32px; height: 32px; color: var(--green); margin-bottom: 8px; }
+.photo-upload p { font-size: 13px; font-weight: 700; color: var(--green); }
+.photo-upload small { font-size: 11px; color: var(--gray); }
+.photo-previews { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; justify-content: center; }
+.photo-thumb {
+  width: 68px; height: 68px; border-radius: 12px;
+  background: var(--green-mid) center/cover no-repeat;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; border: 2px solid white; box-shadow: var(--shadow); overflow: visible;
+}
+.photo-thumb .rm {
+  position: absolute; top: -6px; right: -6px; width: 20px; height: 20px;
+  background: var(--accent); border-radius: 50%; border: 2px solid white; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 10px; font-weight: 900; line-height: 1; z-index: 2;
+}
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-size: 12px; font-weight: 800; color: var(--dark); }
+.form-input, .form-select, .form-textarea {
+  border: 2px solid #e5e7eb; border-radius: 12px;
+  padding: 11px 14px; font-size: 14px; font-family: 'Nunito', sans-serif;
+  color: var(--dark); outline: none; transition: border 0.2s; background: white; width: 100%;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--green); }
+.form-textarea { resize: none; height: 80px; }
+.form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236b7280' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+}
+.char-hint { font-size: 11px; color: var(--gray); font-weight: 400; }
+
+/* ── MAPA ── */
+.map-search { padding: 12px 18px; display: flex; flex-direction: column; gap: 10px; }
+.search-box {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--gray-light); border-radius: 12px; padding: 10px 14px;
+}
+.search-box svg { width: 18px; height: 18px; color: var(--gray); flex-shrink: 0; }
+.search-box input {
+  border: none; background: transparent; outline: none;
+  font-size: 14px; font-family: 'Nunito', sans-serif; flex: 1; color: var(--dark);
+}
+.filter-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--white); border: 2px solid var(--green-mid); border-radius: 10px;
+  padding: 8px 14px; font-size: 13px; font-weight: 700; color: var(--green);
+  cursor: pointer; font-family: 'Nunito', sans-serif; width: fit-content;
+}
+.filter-btn svg { width: 16px; height: 16px; }
+
+.map-area {
+  height: 280px; margin: 0 18px; border-radius: var(--radius);
+  background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
+  position: relative; overflow: hidden; box-shadow: var(--shadow);
+  display: flex; align-items: center; justify-content: center;
+}
+.map-empty-overlay {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.map-empty-overlay svg { width: 40px; height: 40px; color: rgba(45,122,58,0.4); }
+.map-empty-overlay p { font-size: 13px; font-weight: 700; color: rgba(45,122,58,0.6); }
+.map-empty-overlay small { font-size: 11px; color: rgba(45,122,58,0.5); }
+
+.map-nearby {
+  background: white; border-radius: 16px; padding: 14px 16px;
+  margin: 12px 18px; box-shadow: var(--shadow);
+}
+.map-nearby-title { font-family: 'Syne', sans-serif; font-size: 15px; color: var(--dark); margin-bottom: 10px; }
+
+/* ── NOTIFICAÇÕES ── */
+.notif-tabs { display: flex; gap: 4px; padding: 12px 18px; border-bottom: 1px solid #f0f0f0; }
+.notif-tab {
+  padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 700;
+  cursor: pointer; border: none; font-family: 'Nunito', sans-serif;
+  transition: all 0.2s; color: var(--gray); background: transparent;
+}
+.notif-tab.active { background: var(--green); color: white; }
+.notif-empty { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.notif-empty svg { width: 40px; height: 40px; color: var(--green-mid); }
+.notif-empty p { font-size: 13px; font-weight: 700; color: var(--dark); }
+.notif-empty small { font-size: 12px; color: var(--gray); text-align: center; }
+
+/* ── PERFIL ── */
+.perfil-header {
+  background: linear-gradient(160deg, var(--green-pale) 0%, #f0faf1 100%);
+  padding: 20px 18px; display: flex; justify-content: space-between; align-items: flex-start;
+}
+.perfil-user { display: flex; flex-direction: column; gap: 2px; }
+.perfil-avatar {
+  width: 60px; height: 60px; border-radius: 50%; background: var(--green-mid);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; margin-bottom: 10px; border: 3px solid white; box-shadow: var(--shadow);
+  color: var(--green);
+}
+.perfil-name { font-family: 'Syne', sans-serif; font-size: 20px; color: var(--dark); }
+.perfil-email { font-size: 12px; color: var(--gray); margin-top: 2px; }
+.edit-btn {
+  background: var(--white); border: 2px solid var(--green); color: var(--green);
+  border-radius: 10px; padding: 8px 14px; font-size: 12px; font-weight: 800;
+  cursor: pointer; font-family: 'Nunito', sans-serif;
+}
+
+.perfil-anuncios { padding: 16px 18px; }
+.perfil-section-title { font-family: 'Syne', sans-serif; font-size: 15px; color: var(--dark); margin-bottom: 12px; }
+
+.perfil-menu { padding: 0 18px 18px; display: flex; flex-direction: column; gap: 2px; }
+.menu-item {
+  display: flex; align-items: center; gap: 12px; padding: 14px 12px;
+  border-radius: 14px; cursor: pointer; transition: background 0.15s;
+}
+.menu-item:hover { background: var(--gray-light); }
+.menu-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--green-pale); display: flex; align-items: center; justify-content: center; }
+.menu-icon svg { width: 18px; height: 18px; color: var(--green); }
+.menu-icon.danger { background: #fee2e2; }
+.menu-icon.danger svg { color: #ef4444; }
+.menu-label { font-size: 14px; font-weight: 700; color: var(--dark); flex: 1; }
+.menu-label.danger { color: #ef4444; }
+.menu-arrow svg { width: 16px; height: 16px; color: var(--gray); }
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--dark); color: white; padding: 12px 20px; border-radius: 12px;
+  font-size: 13px; font-weight: 700; opacity: 0; transition: all 0.3s; z-index: 9999;
+  white-space: nowrap; pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* input error */
+.input-error { border-color: #ef4444 !important; }
+.error-msg { font-size: 11px; color: #ef4444; font-weight: 700; margin-top: 4px; display: none; }
+.error-msg.show { display: block; }
+
+/* loading spinner */
+.spinner {
+  width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white; border-radius: 50%;
+  animation: spin 0.7s linear infinite; flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <!-- Status bar (always visible) -->
+  <div class="status-bar" id="statusBar">
+    <span>9:41</span>
+    <div class="status-icons">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+    </div>
+  </div>
+
+  <div class="screen-container">
+
+    <!-- ══════════════════════════════
+         TELA: LOGIN
+    ══════════════════════════════ -->
+    <div class="screen auth-screen active" id="screen-login">
+      <div class="auth-bg">
+        <!-- decorative -->
+        <div class="auth-circle" style="width:200px;height:200px;top:-60px;right:-60px;"></div>
+        <div class="auth-circle" style="width:120px;height:120px;bottom:180px;left:-40px;"></div>
+        <div class="auth-paw-decor" style="top:30px;left:20px;">🐾</div>
+        <div class="auth-paw-decor" style="bottom:200px;right:16px;font-size:40px;">🐾</div>
+
+        <div class="auth-brand-area">
+        <div class="auth-logo">
+          <svg viewBox="0 0 80 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M40 2C23 2 9 16 9 33c0 20 31 55 31 55s31-35 31-55C71 16 57 2 40 2z" fill="#6abf69" opacity="0.25" stroke="#6abf69" stroke-width="2.5"/>
+            <circle cx="40" cy="32" r="22" fill="none" stroke="white" stroke-width="2.2"/>
+            <path d="M40 52 L40 62" stroke="#6abf69" stroke-width="3" stroke-linecap="round"/>
+            <path d="M40 60 L36 67 L40 65 L44 67 Z" fill="#6abf69"/>
+            <circle cx="40" cy="67" r="3" fill="white"/>
+            <!-- dog -->
+            <path d="M28 26 Q27 21 31 20 Q33 19 34 21 L36 24" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <circle cx="31" cy="23" r="0.8" fill="white"/>
+            <!-- cat -->
+            <path d="M46 22 L45 19 L47 21 M50 22 L51 19 L49 21" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <path d="M44 22 Q48 20 52 23 Q53 27 50 29 Q48 30 46 29 Q43 27 44 22Z" stroke="white" stroke-width="1.6" fill="none"/>
+            <circle cx="46.5" cy="25" r="0.7" fill="white"/>
+            <circle cx="49.5" cy="25" r="0.7" fill="white"/>
+            <!-- bird -->
+            <ellipse cx="38" cy="37" rx="5" ry="4" stroke="white" stroke-width="1.6" fill="none"/>
+            <path d="M35 34 Q34 31 36 31" stroke="white" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+            <circle cx="36.5" cy="35.5" r="0.7" fill="white"/>
+            <!-- heart -->
+            <path d="M38 44 Q40 41 42 44 Q44 47 40 50 Q36 47 38 44Z" fill="white" opacity="0.9"/>
+          </svg>
+        </div>
+        <div class="auth-app-name"><span style="color:#1e3a5f">Cadê </span><span class="cmp-green">Meu </span><span class="cmp-blue">Pet?</span></div>
+        <div class="auth-tagline">Conectando corações,<br>reunindo lares.</div>
+        </div>
+      </div>
+
+      <div class="auth-card">
+        <div class="auth-card-title">Bem-vindo de volta 👋</div>
+        <div class="auth-card-sub">Entre na sua conta para continuar</div>
+
+        <!-- Google -->
+        <button class="btn-google" onclick="loginGoogle()">
+          <svg class="g-icon" viewBox="0 0 48 48">
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.29-8.16 2.29-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            <path fill="none" d="M0 0h48v48H0z"/>
+          </svg>
+          Continuar com Google
+        </button>
+
+        <div class="divider"><span>ou entre com e-mail</span></div>
+
+        <div class="auth-field">
+          <label class="auth-label">E-mail</label>
+          <input class="auth-input" id="login-email" type="email" placeholder="seu@email.com" oninput="clearErr('login-email')">
+          <div class="error-msg" id="err-login-email">E-mail inválido</div>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Senha</label>
+          <div class="auth-input-wrap">
+            <input class="auth-input" id="login-senha" type="password" placeholder="••••••••" oninput="clearErr('login-senha')">
+            <button class="auth-eye" onclick="toggleSenha('login-senha',this)" type="button">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            </button>
+          </div>
+          <div class="error-msg" id="err-login-senha">Senha inválida</div>
+        </div>
+        <button class="forgot-link" onclick="goToScreen('esqueci')">Esqueci minha senha</button>
+
+        <button class="btn-primary" id="btn-login" onclick="fazerLogin()">
+          Entrar
+        </button>
+
+        <div class="auth-switch">
+          Não tem conta? <button onclick="goToScreen('cadastro-conta')">Criar conta grátis</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         TELA: CADASTRO DE CONTA
+    ══════════════════════════════ -->
+    <div class="screen auth-screen" id="screen-cadastro-conta">
+      <div class="auth-bg" style="flex:0.7;">
+        <div class="auth-circle" style="width:160px;height:160px;top:-40px;right:-40px;"></div>
+        <div class="auth-brand-area" style="padding:30px 30px 16px;">
+          <div class="auth-logo" style="width:70px;height:70px;">
+            <svg viewBox="0 0 80 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M40 2C23 2 9 16 9 33c0 20 31 55 31 55s31-35 31-55C71 16 57 2 40 2z" fill="#6abf69" opacity="0.25" stroke="#6abf69" stroke-width="2.5"/>
+              <circle cx="40" cy="32" r="22" fill="none" stroke="white" stroke-width="2.2"/>
+              <path d="M40 52 L40 60" stroke="#6abf69" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="40" cy="64" r="3" fill="white"/>
+              <path d="M28 26 Q27 21 31 20 Q33 19 34 21 L36 24" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+              <circle cx="31" cy="23" r="0.8" fill="white"/>
+              <path d="M46 22 L45 19 L47 21 M50 22 L51 19 L49 21" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+              <path d="M44 22 Q48 20 52 23 Q53 27 50 29 Q48 30 46 29 Q43 27 44 22Z" stroke="white" stroke-width="1.6" fill="none"/>
+              <ellipse cx="38" cy="37" rx="5" ry="4" stroke="white" stroke-width="1.6" fill="none"/>
+              <path d="M38 44 Q40 41 42 44 Q44 47 40 50 Q36 47 38 44Z" fill="white" opacity="0.9"/>
+            </svg>
+          </div>
+          <div class="auth-app-name" style="font-size:22px;"><span style="color:#1e3a5f">Cadê </span><span class="cmp-green">Meu </span><span class="cmp-blue">Pet?</span></div>
+        </div>
+      </div>
+
+      <div class="auth-card" style="border-radius:28px 28px 0 0; overflow-y:auto; max-height:520px;">
+        <button class="back-link" onclick="goToScreen('login')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          Voltar
+        </button>
+        <div class="auth-card-title">Criar conta 🐾</div>
+        <div class="auth-card-sub">É grátis e leva menos de 1 minuto</div>
+
+        <button class="btn-google" onclick="loginGoogle()">
+          <svg class="g-icon" viewBox="0 0 48 48">
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.29-8.16 2.29-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            <path fill="none" d="M0 0h48v48H0z"/>
+          </svg>
+          Cadastrar com Google
+        </button>
+
+        <div class="divider"><span>ou com e-mail</span></div>
+
+        <div class="auth-field">
+          <label class="auth-label">Nome completo</label>
+          <input class="auth-input" id="reg-nome" type="text" placeholder="Seu nome" oninput="clearErr('reg-nome')">
+          <div class="error-msg" id="err-reg-nome">Informe seu nome</div>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">E-mail</label>
+          <input class="auth-input" id="reg-email" type="email" placeholder="seu@email.com" oninput="clearErr('reg-email')">
+          <div class="error-msg" id="err-reg-email">E-mail inválido</div>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Senha</label>
+          <div class="auth-input-wrap">
+            <input class="auth-input" id="reg-senha" type="password" placeholder="Mín. 6 caracteres" oninput="clearErr('reg-senha')">
+            <button class="auth-eye" onclick="toggleSenha('reg-senha',this)" type="button">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            </button>
+          </div>
+          <div class="error-msg" id="err-reg-senha">Mínimo de 6 caracteres</div>
+        </div>
+
+        <button class="btn-primary" onclick="fazerCadastro()">Criar minha conta</button>
+
+        <div class="auth-switch">
+          Já tem conta? <button onclick="goToScreen('login')">Entrar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         TELA: ESQUECI A SENHA
+    ══════════════════════════════ -->
+    <div class="screen auth-screen" id="screen-esqueci">
+      <div class="auth-bg" style="flex:0.5;">
+        <div class="auth-brand-area" style="padding:30px;">
+          <div class="auth-logo" style="width:64px;height:64px;">
+            <svg viewBox="0 0 80 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M40 2C23 2 9 16 9 33c0 20 31 55 31 55s31-35 31-55C71 16 57 2 40 2z" fill="#6abf69" opacity="0.25" stroke="#6abf69" stroke-width="2.5"/>
+              <circle cx="40" cy="32" r="22" fill="none" stroke="white" stroke-width="2.2"/>
+              <path d="M40 52 L40 60" stroke="#6abf69" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="40" cy="64" r="3" fill="white"/>
+              <path d="M28 26 Q27 21 31 20 Q33 19 34 21 L36 24" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+              <path d="M44 22 Q48 20 52 23 Q53 27 50 29 Q48 30 46 29 Q43 27 44 22Z" stroke="white" stroke-width="1.6" fill="none"/>
+              <ellipse cx="38" cy="37" rx="5" ry="4" stroke="white" stroke-width="1.6" fill="none"/>
+              <path d="M38 44 Q40 41 42 44 Q44 47 40 50 Q36 47 38 44Z" fill="white" opacity="0.9"/>
+            </svg>
+          </div>
+          <div class="auth-app-name" style="font-size:20px;"><span style="color:#1e3a5f">Cadê </span><span class="cmp-green">Meu </span><span class="cmp-blue">Pet?</span></div>
+        </div>
+      </div>
+      <div class="auth-card" style="flex:1;">
+        <button class="back-link" onclick="goToScreen('login')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          Voltar ao login
+        </button>
+        <div class="auth-card-title">Recuperar senha 🔑</div>
+        <div class="auth-card-sub">Informe seu e-mail e enviaremos um link para redefinir sua senha.</div>
+
+        <div class="auth-field">
+          <label class="auth-label">E-mail cadastrado</label>
+          <input class="auth-input" id="rec-email" type="email" placeholder="seu@email.com">
+        </div>
+
+        <button class="btn-primary" onclick="enviarRecuperacao()">Enviar link de recuperação</button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         APP: HOME
+    ══════════════════════════════ -->
+    <div class="screen" id="screen-home">
+      <div class="hero">
+        <div class="brand">
+          <div class="brand-icon" style="background:transparent;padding:0;width:44px;height:44px;">
+            <svg viewBox="0 0 80 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="44" height="44">
+              <path d="M40 2C23 2 9 16 9 33c0 20 31 55 31 55s31-35 31-55C71 16 57 2 40 2z" fill="#6abf69" stroke="#4a9e5c" stroke-width="2"/>
+              <circle cx="40" cy="32" r="21" fill="white" opacity="0.15"/>
+              <circle cx="40" cy="32" r="21" fill="none" stroke="#4a9e5c" stroke-width="2"/>
+              <circle cx="40" cy="67" r="4" fill="white"/>
+              <path d="M28 26 Q27 21 31 20 Q33 19 34 21 L36 24" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+              <circle cx="31" cy="23" r="1" fill="white"/>
+              <path d="M46 22 L45 18 L47 21 M50 22 L51 18 L49 21" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+              <path d="M44 22 Q48 20 52 23 Q53 28 50 30 Q48 31 46 30 Q43 28 44 22Z" stroke="white" stroke-width="1.8" fill="none"/>
+              <circle cx="46.5" cy="25" r="0.9" fill="white"/>
+              <circle cx="49.5" cy="25" r="0.9" fill="white"/>
+              <ellipse cx="38" cy="37" rx="5.5" ry="4.5" stroke="white" stroke-width="1.8" fill="none"/>
+              <path d="M35.5 34.5 Q34 31 36 31" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+              <circle cx="37" cy="36" r="0.8" fill="white"/>
+              <path d="M37 44 Q40 40 43 44 Q45 48 40 51 Q35 48 37 44Z" fill="white"/>
+            </svg>
+          </div>
+          <div>
+            <div class="brand-name" style="font-family:'Nunito',sans-serif;font-weight:900;font-size:17px;">
+              <span style="color:#1e5fa8">Cadê </span><span style="color:#4a9e5c">Meu </span><span style="color:#4a90d9">Pet?</span>
+            </div>
+            <div class="brand-sub">Conectando corações, reunindo lares.</div>
+          </div>
+        </div>
+        <div class="hero-greeting" id="hero-greeting">Olá! 👋</div>
+        <h1>Encontre animais <span>perdidos com amor e tecnologia</span></h1>
+        <p>Ajude a localizar animais perdidos e receba alertas da sua região.</p>
+        <button class="btn-primary" onclick="goToScreen('cadastrar')">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+          Cadastrar animal perdido
+        </button>
+        <button class="btn-outline" onclick="goToScreen('mapa')">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          Ver animais perdidos
+        </button>
+      </div>
+
+      <div class="stats-strip">
+        <div class="stat"><div class="stat-num" id="stat-cadastrados">0</div><div class="stat-label">Cadastrados</div></div>
+        <div class="stat"><div class="stat-num" id="stat-encontrados">0</div><div class="stat-label">Encontrados</div></div>
+        <div class="stat"><div class="stat-num" id="stat-usuarios">0</div><div class="stat-label">Usuários</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">🔴 Perdidos perto de você</div>
+        <div class="empty-state">
+          <div class="empty-icon">🐾</div>
+          <div class="empty-title">Nenhum animal cadastrado ainda</div>
+          <div class="empty-sub">Quando alguém cadastrar um animal perdido na sua região, ele aparecerá aqui.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         APP: CADASTRAR
+    ══════════════════════════════ -->
+    <div class="screen" id="screen-cadastrar">
+      <div class="screen-header">
+        <button class="back-btn" onclick="goToScreen('home')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        </button>
+        <div class="screen-title">Cadastrar animal</div>
+      </div>
+      <div class="form-body">
+        <div style="font-family:'Syne',sans-serif;font-size:17px;color:var(--dark);margin-bottom:2px;">Cadastro do animal desaparecido</div>
+        <div style="font-size:12px;color:var(--gray);margin-top:-8px;">Preencha com o máximo de detalhes possível.</div>
+
+        <input type="file" id="foto-input" accept="image/*" multiple style="display:none" onchange="processarFotos(this)">
+
+        <div class="photo-upload" id="photo-upload-zone" onclick="document.getElementById('foto-input').click()">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+          <p>Adicionar fotos</p>
+          <small>Inclua fotos nítidas do animal (máx. 5)</small>
+          <div class="photo-previews" id="photo-previews"></div>
+        </div>
+
+        <div id="ai-analyzing" style="display:none;background:var(--green-pale);border-radius:12px;padding:12px 14px;display:none;align-items:center;gap:10px;">
+          <div class="spinner" style="border-color:rgba(74,158,92,0.3);border-top-color:var(--green-dark);"></div>
+          <span style="font-size:13px;font-weight:700;color:var(--green-dark);">Analisando foto com IA...</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nome do animal <span class="char-hint">(opcional)</span></label>
+          <input class="form-input" id="cad-nome" type="text" placeholder="Ex: Mel">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Espécie</label>
+          <select class="form-select" id="cad-especie">
+            <option value="">Selecione...</option>
+            <option>Cachorro</option>
+            <option>Gato</option>
+            <option>Coelho</option>
+            <option>Pássaro</option>
+            <option>Outro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Raça <span class="char-hint">(opcional)</span></label>
+          <input class="form-input" id="cad-raca" type="text" placeholder="Ex: Vira-lata">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sexo</label>
+          <select class="form-select" id="cad-sexo">
+            <option value="">Selecione...</option>
+            <option>Macho</option>
+            <option>Fêmea</option>
+            <option>Não identificado</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cor</label>
+          <input class="form-input" id="cad-cor" type="text" placeholder="Ex: Caramelo, preto e branco...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Porte</label>
+          <select class="form-select" id="cad-porte">
+            <option value="">Selecione...</option>
+            <option>Pequeno</option>
+            <option>Médio</option>
+            <option>Grande</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Características marcantes</label>
+          <textarea class="form-textarea" id="cad-caracteristicas" placeholder="Descreva marcas, coleira, comportamento..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Data do desaparecimento</label>
+          <input class="form-input" type="date">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Último local visto</label>
+          <input class="form-input" type="text" placeholder="Ex: Av. Paulista, 1000 – São Paulo/SP">
+        </div>
+        <button class="btn-primary" onclick="showToast('✅ Animal cadastrado! Alerta enviado para a região.')">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Publicar anúncio
+        </button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         APP: MAPA
+    ══════════════════════════════ -->
+    <div class="screen" id="screen-mapa">
+      <div style="padding:14px 18px 0;display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-family:'Syne',sans-serif;font-size:18px;color:var(--dark);">Mapa</div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22" style="color:var(--gray)"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <div class="map-search">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input type="text" placeholder="Buscar por região ou bairro">
+        </div>
+        <button class="filter-btn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A1 1 0 0019 4H5a1 1 0 00-.75 1.61z"/></svg>
+          Filtros
+        </button>
+      </div>
+
+      <div class="map-area">
+        <div class="map-empty-overlay">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
+          <p>Mapa carregará aqui</p>
+          <small>Integre com Google Maps API</small>
+        </div>
+      </div>
+
+      <div class="map-nearby" style="margin-top:12px;">
+        <div class="map-nearby-title">Animais perdidos na sua região</div>
+        <div class="empty-state" style="padding:16px 0 4px;">
+          <div class="empty-icon" style="font-size:32px;">🗺️</div>
+          <div class="empty-title">Nenhum animal por aqui</div>
+          <div class="empty-sub">Animais cadastrados aparecerão no mapa em tempo real.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         APP: NOTIFICAÇÕES
+    ══════════════════════════════ -->
+    <div class="screen" id="screen-notificacoes">
+      <div style="padding:14px 18px 0;font-family:'Syne',sans-serif;font-size:18px;color:var(--dark);">Notificações</div>
+      <div class="notif-tabs">
+        <button class="notif-tab active" onclick="setNotifTab(this)">Todas</button>
+        <button class="notif-tab" onclick="setNotifTab(this)">Alertas</button>
+        <button class="notif-tab" onclick="setNotifTab(this)">Mensagens</button>
+      </div>
+      <div class="notif-empty">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+        <p>Nenhuma notificação</p>
+        <small>Você receberá alertas quando houver animais perdidos próximos a você.</small>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         APP: PERFIL
+    ══════════════════════════════ -->
+    <div class="screen" id="screen-perfil">
+      <div class="perfil-header">
+        <div class="perfil-user">
+          <div class="perfil-avatar">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          </div>
+          <div class="perfil-name" id="perfil-nome">Usuário</div>
+          <div class="perfil-email" id="perfil-email">email@exemplo.com</div>
+        </div>
+      </div>
+
+      <div class="perfil-anuncios">
+        <div class="perfil-section-title">Meus anúncios</div>
+        <div class="empty-state" style="padding:12px 0 4px;">
+          <div class="empty-icon" style="font-size:32px;">📋</div>
+          <div class="empty-title">Nenhum anúncio ainda</div>
+          <div class="empty-sub">Seus animais cadastrados aparecerão aqui.</div>
+        </div>
+      </div>
+
+      <div class="perfil-menu">
+        <div class="menu-item" onclick="goToScreen('configuracoes')">
+          <div class="menu-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg></div>
+          <div class="menu-label">Configurações</div>
+          <div class="menu-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+        </div>
+        <div class="menu-item" onclick="showToast('❓ Ajuda e suporte')">
+          <div class="menu-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></div>
+          <div class="menu-label">Ajuda e suporte</div>
+          <div class="menu-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+        </div>
+        <div class="menu-item" onclick="abrirModalLogout()">
+          <div class="menu-icon danger"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg></div>
+          <div class="menu-label danger">Sair da conta</div>
+          <div class="menu-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         APP: CONFIGURAÇÕES
+    ══════════════════════════════ -->
+    <div class="screen" id="screen-configuracoes">
+      <div class="screen-header">
+        <button class="back-btn" onclick="goToScreen('perfil')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        </button>
+        <div class="screen-title">Configurações</div>
+      </div>
+      <div class="form-body">
+
+        <!-- foto de perfil -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
+          <div id="cfg-avatar" style="width:76px;height:76px;border-radius:50%;background:var(--green-mid);display:flex;align-items:center;justify-content:center;border:3px solid var(--green);position:relative;">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="34" height="34" style="color:var(--green)"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            <button onclick="showToast('📷 Escolher foto...')" style="position:absolute;bottom:-2px;right:-2px;width:26px;height:26px;background:var(--green);border:2px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border-style:solid;">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13" style="color:white"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+            </button>
+          </div>
+          <div style="font-size:12px;color:var(--gray);">Toque para alterar a foto</div>
+        </div>
+
+        <div style="font-family:'Syne',sans-serif;font-size:14px;color:var(--dark);padding-top:4px;">Dados pessoais</div>
+
+        <div class="form-group">
+          <label class="form-label">Nome completo</label>
+          <input class="form-input" id="cfg-nome" type="text" placeholder="Seu nome completo">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Data de nascimento</label>
+          <input class="form-input" id="cfg-nascimento" type="date">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            CPF
+            <span class="char-hint"> · visível apenas para você</span>
+          </label>
+          <input class="form-input" id="cfg-cpf" type="text" placeholder="000.000.000-00" maxlength="14" oninput="mascaraCPF(this)">
+          <div style="font-size:11px;color:var(--gray);margin-top:4px;display:flex;align-items:center;gap:4px;">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12" style="color:var(--green);flex-shrink:0"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+            Seu CPF é usado apenas para confirmar sua maioridade e não é exibido a outros usuários.
+          </div>
+        </div>
+
+        <div style="font-family:'Syne',sans-serif;font-size:14px;color:var(--dark);padding-top:4px;">Informações de contato</div>
+
+        <div class="form-group">
+          <label class="form-label">E-mail de contato</label>
+          <input class="form-input" id="cfg-email" type="email" placeholder="seu@email.com">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Telefone / WhatsApp</label>
+          <input class="form-input" id="cfg-telefone" type="tel" placeholder="(00) 00000-0000" maxlength="15" oninput="mascaraTel(this)">
+        </div>
+
+        <button class="btn-primary" onclick="salvarConfiguracoes()">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Salvar alterações
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /screen-container -->
+
+  <!-- Bottom nav (só aparece no app) -->
+  <div class="bottom-nav" id="bottomNav" style="display:none;">
+    <button class="nav-item active" id="nav-home" onclick="goToScreen('home')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      Início
+    </button>
+    <button class="nav-item" id="nav-mapa" onclick="goToScreen('mapa')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
+      Mapa
+    </button>
+    <button class="nav-fab" onclick="goToScreen('cadastrar')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    </button>
+    <button class="nav-item" id="nav-notificacoes" onclick="goToScreen('notificacoes')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+      Alertas
+    </button>
+    <button class="nav-item" id="nav-perfil" onclick="goToScreen('perfil')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      Perfil
+    </button>
+  </div>
+
+  <!-- Modal: confirmar logout -->
+  <div id="modal-logout" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.45);z-index:200;align-items:flex-end;justify-content:center;">
+    <div style="background:var(--white);border-radius:24px 24px 0 0;padding:28px 24px 32px;width:100%;animation:fadeUp 0.25s ease;">
+      <div style="width:36px;height:4px;background:#e5e7eb;border-radius:4px;margin:0 auto 20px;"></div>
+      <div style="font-family:'Syne',sans-serif;font-size:18px;color:var(--dark);margin-bottom:8px;text-align:center;">Quer mesmo sair?</div>
+      <div style="font-size:13px;color:var(--gray);text-align:center;margin-bottom:24px;line-height:1.5;">Você precisará fazer login novamente para acessar sua conta.</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button onclick="confirmarLogout()" style="background:#ef4444;color:white;border:none;border-radius:14px;padding:14px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:background 0.2s;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">Sim, quero sair</button>
+        <button onclick="fecharModalLogout()" style="background:var(--gray-light);color:var(--dark);border:none;border-radius:14px;padding:14px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;">Não, continuar</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── state ── */
+const AUTH_SCREENS = ['login','cadastro-conta','esqueci'];
+const APP_SCREENS  = ['home','mapa','cadastrar','notificacoes','perfil','configuracoes'];
+const NAV_MAP = { home:'nav-home', mapa:'nav-mapa', notificacoes:'nav-notificacoes', perfil:'nav-perfil' };
+
+let currentUser = null;
+
+/* ── navigation ── */
+function goToScreen(id) {
+  [...AUTH_SCREENS, ...APP_SCREENS].forEach(s => {
+    const el = document.getElementById('screen-' + s);
+    if (el) el.classList.remove('active');
+  });
+
+  const el = document.getElementById('screen-' + id);
+  if (el) el.classList.add('active');
+
+  const isApp = APP_SCREENS.includes(id);
+  document.getElementById('bottomNav').style.display = isApp ? 'flex' : 'none';
+
+  // update nav highlight
+  Object.values(NAV_MAP).forEach(n => document.getElementById(n)?.classList.remove('active'));
+  if (NAV_MAP[id]) document.getElementById(NAV_MAP[id]).classList.add('active');
+
+  // preenche campos de configurações com dados do usuário ao abrir
+  if (id === 'configuracoes' && currentUser) {
+    const nomeEl = document.getElementById('cfg-nome');
+    const emailEl = document.getElementById('cfg-email');
+    if (nomeEl && !nomeEl.value) nomeEl.value = currentUser.nome || '';
+    if (emailEl && !emailEl.value) emailEl.value = currentUser.email || '';
+  }
+}
+
+/* ── auth actions ── */
+function fazerLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const senha = document.getElementById('login-senha').value;
+  let ok = true;
+
+  if (!email || !/\S+@\S+\.\S+/.test(email)) {
+    document.getElementById('login-email').classList.add('input-error');
+    document.getElementById('err-login-email').classList.add('show');
+    ok = false;
+  }
+  if (senha.length < 6) {
+    document.getElementById('login-senha').classList.add('input-error');
+    document.getElementById('err-login-senha').classList.add('show');
+    ok = false;
+  }
+  if (!ok) return;
+
+  const btn = document.getElementById('btn-login');
+  btn.innerHTML = '<div class="spinner"></div> Entrando...';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    currentUser = { nome: email.split('@')[0], email };
+    entrarNoApp();
+    btn.innerHTML = 'Entrar';
+    btn.disabled = false;
+  }, 1200);
+}
+
+function fazerCadastro() {
+  const nome  = document.getElementById('reg-nome').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const senha = document.getElementById('reg-senha').value;
+  let ok = true;
+
+  if (!nome) { document.getElementById('reg-nome').classList.add('input-error'); document.getElementById('err-reg-nome').classList.add('show'); ok = false; }
+  if (!email || !/\S+@\S+\.\S+/.test(email)) { document.getElementById('reg-email').classList.add('input-error'); document.getElementById('err-reg-email').classList.add('show'); ok = false; }
+  if (senha.length < 6) { document.getElementById('reg-senha').classList.add('input-error'); document.getElementById('err-reg-senha').classList.add('show'); ok = false; }
+  if (!ok) return;
+
+  currentUser = { nome, email };
+  entrarNoApp();
+}
+
+function loginGoogle() {
+  showToast('🔗 Redirecionando para o Google...');
+  setTimeout(() => {
+    currentUser = { nome: 'Usuário Google', email: 'usuario@gmail.com' };
+    entrarNoApp();
+  }, 1400);
+}
+
+function enviarRecuperacao() {
+  const email = document.getElementById('rec-email').value.trim();
+  if (!email) { showToast('⚠️ Informe seu e-mail'); return; }
+  showToast('📧 Link enviado para ' + email);
+  setTimeout(() => goToScreen('login'), 1600);
+}
+
+function entrarNoApp() {
+  if (currentUser) {
+    const gEl = document.getElementById('hero-greeting');
+    const nEl = document.getElementById('perfil-nome');
+    const eEl = document.getElementById('perfil-email');
+    if (gEl) gEl.textContent = 'Olá, ' + currentUser.nome + '! 👋';
+    if (nEl) nEl.textContent = currentUser.nome;
+    if (eEl) eEl.textContent = currentUser.email;
+  }
+  // esconde todas as telas
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  // mostra home
+  const home = document.getElementById('screen-home');
+  if (home) home.classList.add('active');
+  // mostra nav
+  const nav = document.getElementById('bottomNav');
+  if (nav) nav.style.display = 'flex';
+  // destaca botão home
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const nh = document.getElementById('nav-home');
+  if (nh) nh.classList.add('active');
+}
+
+/* ── modal logout ── */
+function abrirModalLogout() {
+  const m = document.getElementById('modal-logout');
+  m.style.display = 'flex';
+}
+function fecharModalLogout() {
+  document.getElementById('modal-logout').style.display = 'none';
+}
+function confirmarLogout() {
+  fecharModalLogout();
+  fazerLogout();
+}
+
+function fazerLogout() {
+  currentUser = null;
+  ['login-email','login-senha'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  goToScreen('login');
+  showToast('👋 Até logo!');
+}
+
+/* ── configurações ── */
+function salvarConfiguracoes() {
+  const nome = document.getElementById('cfg-nome').value.trim();
+  const cpf  = document.getElementById('cfg-cpf').value.trim();
+
+  // validação básica de CPF (11 dígitos)
+  const cpfLimpo = cpf.replace(/\D/g,'');
+  if (cpf && cpfLimpo.length !== 11) {
+    showToast('⚠️ CPF inválido — verifique os dados');
+    document.getElementById('cfg-cpf').classList.add('input-error');
+    return;
+  }
+  document.getElementById('cfg-cpf').classList.remove('input-error');
+
+  if (nome && currentUser) {
+    currentUser.nome = nome;
+    document.getElementById('perfil-nome').textContent = nome;
+    document.getElementById('hero-greeting').textContent = 'Olá, ' + nome + '! 👋';
+  }
+  showToast('✅ Alterações salvas com sucesso!');
+  setTimeout(() => goToScreen('perfil'), 900);
+}
+
+/* ── máscaras ── */
+function mascaraCPF(el) {
+  let v = el.value.replace(/\D/g,'').slice(0,11);
+  if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/,'$1.$2.$3-$4');
+  else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/,'$1.$2.$3');
+  else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/,'$1.$2');
+  el.value = v;
+}
+function mascaraTel(el) {
+  let v = el.value.replace(/\D/g,'').slice(0,11);
+  if (v.length > 10) v = v.replace(/(\d{2})(\d{5})(\d{4})/,'($1) $2-$3');
+  else if (v.length > 6) v = v.replace(/(\d{2})(\d{4,5})(\d{0,4})/,'($1) $2-$3');
+  else if (v.length > 2) v = v.replace(/(\d{2})(\d+)/,'($1) $2');
+  el.value = v;
+}
+
+/* ── helpers ── */
+function clearErr(id) {
+  document.getElementById(id)?.classList.remove('input-error');
+  const err = document.getElementById('err-' + id);
+  if (err) err.classList.remove('show');
+}
+
+function toggleSenha(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  const isHidden = inp.type === 'password';
+  inp.type = isHidden ? 'text' : 'password';
+  btn.innerHTML = isHidden
+    ? '<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>';
+}
+
+function setNotifTab(btn) {
+  document.querySelectorAll('.notif-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* ── fotos e análise IA ── */
+let fotosBase64 = [];
+
+async function processarFotos(input) {
+  const files = Array.from(input.files).slice(0, 5);
+  if (!files.length) return;
+  fotosBase64 = [];
+  const previews = document.getElementById('photo-previews');
+  previews.innerHTML = '';
+
+  for (const file of files) {
+    const b64 = await fileToBase64(file);
+    fotosBase64.push({ b64, type: file.type });
+    const thumb = document.createElement('div');
+    thumb.className = 'photo-thumb';
+    thumb.style.cssText = 'background-size:cover;background-position:center;background-repeat:no-repeat;';
+    thumb.style.backgroundImage = `url(${b64})`;
+    const rm = document.createElement('button');
+    rm.className = 'rm';
+    rm.textContent = '✕';
+    rm.onclick = (e) => { e.stopPropagation(); thumb.remove(); };
+    thumb.appendChild(rm);
+    previews.appendChild(thumb);
+  }
+
+  // mostra loader e chama IA com a primeira foto
+  const loader = document.getElementById('ai-analyzing');
+  loader.style.display = 'flex';
+  try {
+    await analisarFotoComIA(fotosBase64[0]);
+  } catch(e) {
+    showToast('⚠️ Não foi possível analisar a foto automaticamente.');
+  }
+  loader.style.display = 'none';
+}
+
+function fileToBase64(file) {
+  return new Promise((res) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.readAsDataURL(file);
+  });
+}
+
+async function analisarFotoComIA(foto) {
+  const pureB64 = foto.b64.split(',')[1];
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{
+        role: 'user',
+        content: [
+          {
+            type: 'image',
+            source: { type: 'base64', media_type: foto.type, data: pureB64 }
+          },
+          {
+            type: 'text',
+            text: 'Analise essa imagem de animal de estimação e responda SOMENTE em JSON válido, sem markdown, sem blocos de código, sem texto extra. Formato exato: {"especie":"Cachorro ou Gato ou Pássaro ou Coelho ou Outro","raca":"nome da raça ou Vira-lata se indeterminado","sexo":"Macho ou Fêmea ou Não identificado","cor":"descrição das cores predominantes","porte":"Pequeno ou Médio ou Grande","caracteristicas":"descrição de marcas, pelagem, características físicas visíveis em 1-2 frases"}'
+          }
+        ]
+      }]
+    })
+  });
+  const data = await response.json();
+  const texto = data.content?.map(c => c.text || '').join('').trim();
+  const info = JSON.parse(texto);
+
+  function setSelect(id, val) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    for (const opt of el.options) {
+      if (opt.text.toLowerCase().includes(val.toLowerCase())) { el.value = opt.value || opt.text; break; }
+    }
+  }
+  function setInput(id, val) {
+    const el = document.getElementById(id);
+    if (el && val) el.value = val;
+  }
+
+  if (info.especie) setSelect('cad-especie', info.especie);
+  if (info.raca) setInput('cad-raca', info.raca);
+  if (info.sexo) setSelect('cad-sexo', info.sexo);
+  if (info.cor) setInput('cad-cor', info.cor);
+  if (info.porte) setSelect('cad-porte', info.porte);
+  if (info.caracteristicas) setInput('cad-caracteristicas', info.caracteristicas);
+
+  showToast('✨ Descrição preenchida automaticamente pela IA!');
+}
+
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => t.classList.remove('show'), 2200);
+}
+</script>
+</body>
+</html>
