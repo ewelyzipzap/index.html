@@ -166,11 +166,19 @@ body {
 
 /* BOTTOM NAV */
 .bottom-nav {
-  position:absolute; bottom:0; left:0; right:0;
-  height:var(--nav-h); background:var(--white);
-  border-top:1px solid #e5e7eb;
-  display:flex; align-items:center; justify-content:space-around;
-  z-index:100; padding:0 4px 8px; flex-shrink:0;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%; /* Garante que ela ocupe exatamente a largura interna da .phone */
+  height: var(--nav-h);
+  background: var(--white);
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 100;
+  padding: 0 16px 8px; /* Aumentei o espaçamento nas laterais para alinhar com o app */
+  box-sizing: border-box; /* Previne que o padding estoure a largura de 100% */
 }
 .nav-item { display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; padding:6px 10px; border-radius:12px; transition:all 0.2s; font-size:10px; font-weight:700; color:var(--gray); border:none; background:none; }
 .nav-item.active { color:var(--green); }
