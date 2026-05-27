@@ -1010,7 +1010,46 @@ function renderPhotoPreview() {
   const addBtn = uploadedPhotos.length < 5 ? `<div class="photo-thumb-add" onclick="addPhoto()">+</div>` : '';
   area.innerHTML = thumbs + addBtn;
 }
-function publicarAnuncio() {
+async function publicarAnuncio() {
+  window.publicarPetFirebase = async function() {
+
+}
+
+  const pet = {
+
+    nome: document.getElementById('cad-nome').value,
+    especie: document.getElementById('cad-especie').value,
+    raca: document.getElementById('cad-raca').value,
+    sexo: document.getElementById('cad-sexo').value,
+    cor: document.getElementById('cad-cor').value,
+    porte: document.getElementById('cad-porte').value,
+    desc: document.getElementById('cad-desc').value,
+    data: document.getElementById('cad-data').value,
+    local: document.getElementById('cad-local').value,
+    cidade: document.getElementById('cad-cidade').value,
+    contato: document.getElementById('cad-contato-nome').value,
+    whatsapp: document.getElementById('cad-whatsapp').value,
+    criadoEm: new Date()
+
+  };
+
+  try {
+
+    await addDoc(collection(db, "pets"), pet);
+
+    showToast("🐾 Pet publicado!");
+
+    console.log("Pet salvo no Firebase");
+
+  } catch (error) {
+
+    console.error(error);
+
+    showToast("Erro ao salvar");
+
+  }
+
+}
   const contato = document.getElementById('cad-contato-nome').value.trim();
   const wa = document.getElementById('cad-whatsapp').value.trim();
   if (!contato || !wa) { showToast('⚠️ Preencha nome e WhatsApp'); return; }
@@ -1018,10 +1057,11 @@ function publicarAnuncio() {
   const btn = document.getElementById('btn-publicar');
   btn.innerHTML = '<div class="spinner"></div> Publicando...'; btn.disabled = true;
 
-  setTimeout(() => {
+  setTimeout(async () => {
     const especie = document.getElementById('cad-especie').value;
     const emojiMap = {'🐶 Cachorro':'🐕','🐱 Gato':'🐈','🐰 Coelho':'🐰','🐦 Pássaro':'🐦','🐾 Outro':'🐾'};
     const newPet = {
+      await addDoc(collection(db, "pets"), newPet);
       id: Date.now(),
       nome: document.getElementById('cad-nome').value.trim() || 'Sem nome',
       especie, raca: document.getElementById('cad-raca').value.trim() || '—',
@@ -1039,6 +1079,7 @@ function publicarAnuncio() {
       x: 80 + Math.random()*190, y: 20 + Math.random()*200,
       owner: currentUser?.nome || contato,
     };
+
     pets.unshift(newPet);
     // notif
     notifs.unshift({ type:'alert', icon:newPet.emoji, title:'Novo anúncio publicado!', sub:`${newPet.nome} (${especie}) – ${newPet.cidade}`, time:'agora', cat:'alertas' });
@@ -1313,45 +1354,7 @@ const provider = new GoogleAuthProvider();
   const analytics = getAnalytics(app);
   const storage = getStorage(app);
   const db = getFirestore(app);
-window.publicarPetFirebase = async function() {
 
-}
-
-  const pet = {
-
-    nome: document.getElementById('cad-nome').value,
-    especie: document.getElementById('cad-especie').value,
-    raca: document.getElementById('cad-raca').value,
-    sexo: document.getElementById('cad-sexo').value,
-    cor: document.getElementById('cad-cor').value,
-    porte: document.getElementById('cad-porte').value,
-    desc: document.getElementById('cad-desc').value,
-    data: document.getElementById('cad-data').value,
-    local: document.getElementById('cad-local').value,
-    cidade: document.getElementById('cad-cidade').value,
-    contato: document.getElementById('cad-contato-nome').value,
-    whatsapp: document.getElementById('cad-whatsapp').value,
-    criadoEm: new Date()
-
-  };
-
-  try {
-
-    await addDoc(collection(db, "pets"), pet);
-
-    showToast("🐾 Pet publicado!");
-
-    console.log("Pet salvo no Firebase");
-
-  } catch (error) {
-
-    console.error(error);
-
-    showToast("Erro ao salvar");
-
-  }
-
-}
   // LOGIN GOOGLE
 window.loginGoogle = async function() {
 
