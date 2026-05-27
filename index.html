@@ -801,35 +801,85 @@ function goToScreen(id) {
 }
 
 /* ═══════════════════════ AUTH ═══════════════════════ */
-function fazerLogin() {
+async function fazerLogin() {
+
   const email = document.getElementById('login-email').value.trim();
+
   const senha = document.getElementById('login-senha').value;
-  let ok = true;
-  if (!email || !/\S+@\S+\.\S+/.test(email)) { markErr('login-email','err-login-email'); ok=false; }
-  if (senha.length < 6) { markErr('login-senha','err-login-senha'); ok=false; }
-  if (!ok) return;
-  const btn = document.getElementById('btn-login');
-  btn.innerHTML = '<div class="spinner"></div> Entrando...'; btn.disabled = true;
-  setTimeout(() => {
-    currentUser = { nome: email.split('@')[0].replace(/[^a-zA-Z]/g,' ').trim() || 'Usuário', email };
-    entrarNoApp(); btn.innerHTML = 'Entrar'; btn.disabled = false;
-  }, 1000);
+
+  try {
+
+    const userCredential =
+      await signInWithEmailAndPassword(auth, email, senha);
+
+    currentUser = {
+      nome: userCredential.user.email.split('@')[0],
+      email: userCredential.user.email
+    };
+
+    entrarNoApp();
+
+  } catch(error) {
+
+    console.log(error);
+
+    showToast('❌ Erro no login');
+
+  }
+
 }
-function fazerCadastro() {
+async function fazerCadastro() {
+
   const nome = document.getElementById('reg-nome').value.trim();
+
   const email = document.getElementById('reg-email').value.trim();
+
   const senha = document.getElementById('reg-senha').value;
-  let ok = true;
-  if (!nome) { markErr('reg-nome','err-reg-nome'); ok=false; }
-  if (!email || !/\S+@\S+\.\S+/.test(email)) { markErr('reg-email','err-reg-email'); ok=false; }
-  if (senha.length < 6) { markErr('reg-senha','err-reg-senha'); ok=false; }
-  if (!ok) return;
-  currentUser = { nome, email };
-  entrarNoApp();
+
+  try {
+
+    const userCredential =
+      await createUserWithEmailAndPassword(auth, email, senha);
+
+    currentUser = {
+      nome,
+      email
+    };
+
+    entrarNoApp();
+
+  } catch(error) {
+
+    console.log(error);
+
+    showToast('❌ Erro ao criar conta');
+
+  }
+
 }
-function loginGoogle() {
-  showToast('🔗 Conectando ao Google...');
-  setTimeout(() => { currentUser = { nome: 'Usuário Google', email: 'usuario@gmail.com' }; entrarNoApp(); }, 1200);
+async function loginGoogle() {
+
+  try {
+
+    const result = await signInWithPopup(auth, provider);
+
+    const user = result.user;
+
+    currentUser = {
+      nome: user.displayName,
+      email: user.email
+    };
+
+    entrarNoApp();
+
+  } catch(error) {
+
+    console.log(error);
+
+    showToast('❌ Erro no login Google');
+
+  }
+
 }
 function enviarRecuperacao() {
   const email = document.getElementById('rec-email').value.trim();
@@ -1244,40 +1294,6 @@ document.getElementById('map-area')?.addEventListener('click', e => {
 document.querySelectorAll('.modal-overlay').forEach(m => {
   m.addEventListener('click', e => { if(e.target===m) m.classList.remove('active'); });
 });
-    // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-
-  const auth = getAuth(app);
-
-  const provider = new GoogleAuthProvider();
-
-  const analytics = getAnalytics(app);
-
-
-
-window.loginGoogle = async function() {
-
-  try {
-
-    const result = await signInWithPopup(auth, provider);
-
-    const user = result.user;
-
-    alert("Login realizado com sucesso!");
-
-    console.log(user);
-
-  } catch(error) {
-
-    console.log(error);
-
-    alert("Erro no login");
-
-  }
-
-}
-
-
 </script>
 <script type="module">
   // Import the functions you need from the SDKs you need
@@ -1285,7 +1301,9 @@ window.loginGoogle = async function() {
   import {
   getAuth,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js";
   // TODO: Add SDKs for Firebase products that you want to use
