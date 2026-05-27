@@ -247,7 +247,18 @@ body {
 
 /* PERFIL */
 .perfil-header { background:linear-gradient(160deg, var(--green-pale) 0%, #f0faf1 100%); padding:20px 18px; display:flex; justify-content:space-between; align-items:flex-start; }
-.perfil-avatar { width:60px; height:60px; border-radius:50%; background:var(--green-mid); display:flex; align-items:center; justify-content:center; font-size:26px; margin-bottom:10px; border:3px solid white; box-shadow:var(--shadow); color:var(--green); }
+.perfil-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.perfil-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 .perfil-name { font-family:'Syne',sans-serif; font-size:20px; color:var(--dark); }
 .perfil-email { font-size:12px; color:var(--gray); margin-top:2px; }
 .edit-btn { background:var(--white); border:2px solid var(--green); color:var(--green); border-radius:10px; padding:8px 14px; font-size:12px; font-weight:800; cursor:pointer; font-family:'Nunito',sans-serif; }
@@ -645,7 +656,21 @@ body {
     <div class="screen" id="screen-perfil">
       <div class="perfil-header">
         <div>
-          <div class="perfil-avatar"><svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>
+          <div class="perfil-avatar">
+
+  <img
+    id="profile-pic"
+    src="https://via.placeholder.com/100"
+    alt="Foto de perfil"
+  >
+
+</div>
+
+<input
+  type="file"
+  accept="image/*"
+  onchange="trocarFotoPerfil(event)"
+>
           <div class="perfil-name" id="perfil-nome">Usuário</div>
           <div class="perfil-email" id="perfil-email">email@exemplo.com</div>
         </div>
@@ -758,9 +783,9 @@ body {
 <script>
 /* ═══════════════════════ DATA ═══════════════════════ */
 const PETS_MOCK = [
-  { id:1, nome:'Mel', especie:'🐶 Cachorro', raca:'Golden Retriever', sexo:'Fêmea', cor:'Dourada', porte:'Grande', desc:'Coleira rosa com plaquinha. Muito dócil e brinca com crianças.', data:'2025-05-20', local:'Av. Fernandes Lima, 500', cidade:'Farol – Maceió/AL', whatsapp:'82999990001', recompensa:'R$ 300,00', status:'lost', emoji:'🐕', x:148, y:45, owner:null },
-  { id:2, nome:'Bichano', especie:'🐱 Gato', raca:'Siamês', sexo:'Macho', cor:'Caramelo e branco', porte:'Pequeno', desc:'Olhos azuis, muito assustado com barulho.', data:'2025-05-22', local:'Rua do Comércio, 120', cidade:'Centro – Maceió/AL', whatsapp:'82999990002', recompensa:'—', status:'lost', emoji:'🐈', x:40, y:45, owner:null },
-  { id:3, nome:'Thor', especie:'🐶 Cachorro', raca:'Pastor Alemão', sexo:'Macho', cor:'Preto e marrom', porte:'Grande', desc:'Usa coleira preta. Responde pelo nome.', data:'2025-05-18', local:'Rua Sá e Albuquerque, 80', cidade:'Jaraguá – Maceió/AL', whatsapp:'82999990003', recompensa:'R$ 200,00', status:'found', emoji:'🐕‍🦺', x:252, y:45, owner:null },
+  { id:1, nome:'Mel', especie:'🐶 Cachorro', raca:'Golden Retriever', sexo:'Fêmea', cor:'Dourada', porte:'Grande', desc:'Coleira rosa com plaquinha. Muito dócil e brinca com crianças.', data:'2025-05-20', local:'Av. Fernandes Lima, 500', cidade:'Farol – Maceió/AL', whatsapp:'82996233653', recompensa:'R$ 300,00', status:'lost', emoji:'🐕', x:148, y:45, owner:null },
+  { id:2, nome:'Bichano', especie:'🐱 Gato', raca:'Siamês', sexo:'Macho', cor:'Caramelo e branco', porte:'Pequeno', desc:'Olhos azuis, muito assustado com barulho.', data:'2025-05-22', local:'Rua do Comércio, 120', cidade:'Centro – Maceió/AL', whatsapp:'82981774795', recompensa:'—', status:'lost', emoji:'🐈', x:40, y:45, owner:null },
+  { id:3, nome:'Thor', especie:'🐶 Cachorro', raca:'Pastor Alemão', sexo:'Macho', cor:'Preto e marrom', porte:'Grande', desc:'Usa coleira preta. Responde pelo nome.', data:'2025-05-18', local:'Rua Sá e Albuquerque, 80', cidade:'Jaraguá – Maceió/AL', whatsapp:'82993497822', recompensa:'R$ 200,00', status:'lost', emoji:'🐕‍🦺', x:252, y:45, owner:null },
 ];
 
 let pets = [...PETS_MOCK];
@@ -1183,13 +1208,30 @@ document.querySelectorAll('.modal-overlay').forEach(m => {
 <script type="module">
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-  import {
+import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  signOut
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+  import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-storage.js";
+  
+  import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+  
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js";
   // TODO: Add SDKs for Firebase products that you want to use
   // https://firebase.google.com/docs/web/setup#available-libraries
@@ -1212,6 +1254,8 @@ document.querySelectorAll('.modal-overlay').forEach(m => {
 
 const provider = new GoogleAuthProvider();
   const analytics = getAnalytics(app);
+  const storage = getStorage(app);
+  const db = getFirestore(app);
   // LOGIN GOOGLE
 window.loginGoogle = async function() {
 
@@ -1309,15 +1353,47 @@ function enviarRecuperacao() {
   setTimeout(() => goToScreen('login'), 1800);
 }
 function entrarNoApp() {
-  document.getElementById('hero-greeting').textContent = 'Olá, ' + (currentUser?.nome || 'Usuário') + '! 👋';
+
+  document.getElementById('hero-greeting').textContent =
+    'Olá, ' + (currentUser?.nome || 'Usuário') + '! 👋';
+
   updatePerfilUI();
+
+  carregarMeusPets();
+
+  carregarPets();
+
   goToScreen('home');
+
 }
-function fazerLogout() {
-  currentUser = null;
-  ['login-email','login-senha'].forEach(id => { const e=document.getElementById(id); if(e) e.value=''; });
-  showToast('👋 Até logo!');
-  setTimeout(() => goToScreen('login'), 400);
+window.fazerLogout = async function() {
+
+  try {
+
+    await signOut(auth);
+
+    currentUser = null;
+
+    ['login-email','login-senha'].forEach(id => {
+
+      const e = document.getElementById(id);
+
+      if(e) e.value = '';
+
+    });
+
+    showToast('👋 Até logo!');
+
+    goToScreen('login');
+
+  } catch(error) {
+
+    console.log(error);
+
+    alert(error.message);
+
+  }
+
 }
 function markErr(inputId, errId) {
   document.getElementById(inputId)?.classList.add('input-error');
@@ -1335,8 +1411,165 @@ function toggleSenha(inputId, btn) {
     ? `<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2"/></svg>`
     : `<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>`;
 }
+async function carregarMeusPets() {
 
+  const lista =
+    document.getElementById('perfil-pet-list');
 
+  lista.innerHTML = '';
+
+  try {
+
+    const q = query(
+      collection(db, "pets"),
+      where("donoId", "==", auth.currentUser.uid)
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    querySnapshot.forEach((doc) => {
+
+      const pet = doc.data();
+
+      lista.innerHTML += `
+
+        <div class="pet-card">
+
+          <img
+            src="${pet.foto}"
+            style="
+              width:100%;
+              height:160px;
+              object-fit:cover;
+              border-radius:16px;
+            "
+          >
+
+          <div style="padding:10px;">
+
+            <div style="
+              font-weight:700;
+              font-size:16px;
+            ">
+              ${pet.nome}
+            </div>
+
+            <div style="
+              color:gray;
+              font-size:13px;
+            ">
+              ${pet.especie}
+            </div>
+
+          </div>
+
+        </div>
+
+      `;
+
+    });
+
+  } catch(error) {
+
+    console.log(error);
+
+  }
+
+}
+  async function carregarPets() {
+
+  const lista =
+    document.getElementById('home-pets-list');
+
+  lista.innerHTML = '';
+
+  try {
+
+    const querySnapshot =
+      await getDocs(collection(db, "pets"));
+
+    querySnapshot.forEach((doc) => {
+
+      const pet = doc.data();
+
+      lista.innerHTML += `
+
+        <div class="pet-card">
+
+          <img
+            src="${pet.foto}"
+            style="
+              width:100%;
+              height:180px;
+              object-fit:cover;
+            "
+          >
+
+          <div style="padding:12px;">
+
+            <div style="
+              font-size:18px;
+              font-weight:700;
+            ">
+              ${pet.nome}
+            </div>
+
+            <div style="
+              color:gray;
+              margin-top:4px;
+            ">
+              ${pet.especie}
+            </div>
+
+          </div>
+
+        </div>
+
+      `;
+
+    });
+
+  } catch(error) {
+
+    console.log(error);
+
+  }
+
+}
+window.trocarFotoPerfil = async function(event) {
+
+  const arquivo = event.target.files[0];
+
+  if (!arquivo) return;
+
+  try {
+
+    const nomeArquivo =
+      "perfil_" + Date.now();
+
+    const storageRef =
+      ref(storage, "fotos-perfil/" + nomeArquivo);
+
+    await uploadBytes(storageRef, arquivo);
+
+    const url =
+      await getDownloadURL(storageRef);
+
+    document.getElementById('profile-pic').src = url;
+
+    currentUser.foto = url;
+
+    showToast('✅ Foto atualizada!');
+
+  } catch(error) {
+
+    console.log(error);
+
+    alert(error.message);
+
+  }
+
+}
 </script>
 </body>
 </html>
